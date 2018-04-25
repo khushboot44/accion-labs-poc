@@ -2,19 +2,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { requestApiData } from "./actions";
+import { requestApiData, deleteUser } from "../actions";
 
 class Home extends Component{
-
-    constructor(props){
-        super(props);
-    }
 
     componentDidMount(){
         this.props.requestApiData();
     }
 
     render(){
+        console.log('Home Component Props >>>>>>>>>>',this.props)
         if(!this.props.data.length === 0){
             return <h1>Loading.....</h1>
         }
@@ -27,21 +24,21 @@ class Home extends Component{
                     </div>
                 </div>
                 
-                <div className="row">
+                <div className="row heading">
                             <div className="col-md-1">#</div>
-                            <div className="col-md-1 font-weight-bold">Id</div>
-                            <div className="col-md-2 font-weight-bold">Name</div>
-                            <div className="col-md-3 font-weight-bold">Email</div>
-                            <div className="col-md-1 font-weight-bold">Gender</div>
-                            <div className="col-md-2 font-weight-bold">Salary</div>
-                            <div className="col-md-2 font-weight-bold">Delete</div>
+                            <div className="col-md-1">Id</div>
+                            <div className="col-md-2">Name</div>
+                            <div className="col-md-3">Email</div>
+                            <div className="col-md-1">Gender</div>
+                            <div className="col-md-2">Salary</div>
+                            <div className="col-md-2">Delete</div>
                 </div>
 
                 {
                 this.props.data.map((user, index) => {
                     return (
                         <div key={user.id}>
-                            <div className="row" data-toggle="collapse" data-target={`#${user.id}-collapse`}>
+                            <div className="row col-margin" data-toggle="collapse" data-target={`#${user.id}-collapse`}>
                             <div className="col-md-1 col-sm-1"><input type="checkbox" name="" value="" /></div>
                             <div className="col-md-1 col-sm-1">{user.id}</div>
                             <div className="col-md-2 col-sm-2">{user.name}</div>
@@ -95,6 +92,20 @@ class Home extends Component{
             </div>
         );
     }
+
+    modalDeleteShow(userId){
+        let newUsersList;
+        console.log('modalDeleteShow------------', this.props.data)
+        newUsersList = this.props.data.filter((user)=>{
+            return user.id !== userId
+        })
+
+        console.log('modalDeleteShow', newUsersList);
+        this.props.deleteUser({
+            type: 'DELETE_USER',
+            userlist: newUsersList
+        })
+    }
 }
 
 function mapStateToProps(state){
@@ -104,7 +115,7 @@ function mapStateToProps(state){
 }
 
 function mapDispatchToProps(dispatch){
-    return bindActionCreators({requestApiData}, dispatch)
+    return bindActionCreators({requestApiData, deleteUser}, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
